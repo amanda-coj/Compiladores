@@ -57,4 +57,3 @@ private static void run(String source) {
         "[line " + line + "] Error" + where + ": " + message);
     hadError = true;
   }
-  

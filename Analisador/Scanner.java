@@ -41,7 +41,10 @@ class Scanner {
       case '-': addToken(MINUS); break;
       case '+': addToken(PLUS); break;
       case ';': addToken(SEMICOLON); break;
-      case '*': addToken(STAR); break; 
+      case '*': addToken(STAR); break;
+      default:
+        Lox.error(line, "Unexpected character.");
+        break; 
     }
   }
 

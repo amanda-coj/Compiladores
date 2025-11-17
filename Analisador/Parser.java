@@ -38,6 +38,16 @@ class Parser {
     return false;
   }
 
+  private boolean check(TokenType type) {
+    if (isAtEnd()) return false;
+    return peek().type == type;
+  }
+
+  private Token advance() {
+    if (!isAtEnd()) current++;
+    return previous();
+  }
+
 
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import static com.craftinginterpreters.lox.TokenType.*;
 
 class Parser {
+  private static class ParseError extends RuntimeException {}
   private final List<Token> tokens;
   private int current = 0;
 
@@ -135,7 +136,27 @@ private ParseError error(Token token, String message) {
     return new ParseError();
   }
 
+private void synchronize() {
+    advance();
 
+    while (!isAtEnd()) {
+      if (previous().type == SEMICOLON) return;
+
+      switch (peek().type) {
+        case CLASS:
+        case FUN:
+        case VAR:
+        case FOR:
+        case IF:
+        case WHILE:
+        case PRINT:
+        case RETURN:
+          return;
+      }
+
+      advance();
+    }
+  }
 
 }
   

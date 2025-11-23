@@ -20,7 +20,6 @@ public class Lox {
       runPrompt();
     }
   }
-}
 
 private static void runFile(String path) throws IOException {
     byte[] bytes = Files.readAllBytes(Paths.get(path));
@@ -57,3 +56,4 @@ private static void run(String source) {
         "[line " + line + "] Error" + where + ": " + message);
     hadError = true;
   }
+}

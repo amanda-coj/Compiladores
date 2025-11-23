@@ -15,7 +15,9 @@ class Interpreter implements Expr.Visitor<Object> {
       case BANG:
         return !isTruthy(right);
       case MINUS:
+        checkNumberOperand(expr.operator, right);
         return -(double) right;
+      
     }
 
     // Unreachable.

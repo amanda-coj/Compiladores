@@ -16,7 +16,6 @@ class Interpreter implements Expr.Visitor<Object> {
         return !isTruthy(right);
     }
 
-    // Unreachable.
     return null;
   }
 
@@ -34,7 +33,6 @@ class Interpreter implements Expr.Visitor<Object> {
 private Object evaluate(Expr expr) {
     return expr.accept(this);
   }
-}
 
 @Override
   public Object visitBinaryExpr(Expr.Binary expr) {
@@ -62,13 +60,23 @@ private Object evaluate(Expr expr) {
         }
         break;
       case SLASH:
-        return (double)left / (double)right;
+        checkNumberOperands(expr.operator, left, right);
+        return (double) left / (double) right;
+
       case STAR:
-        return (double)left * (double)right;
+        checkNumberOperands(expr.operator, left, right);
+        return (double) left * (double) right;
+
+      case BANG_EQUAL:
+        return !isEqual(left, right);
+
+      case EQUAL_EQUAL:
+        return isEqual(left, right);
     }
 
-    // Unreachable.
     return null;
   }
+
+}
 
   

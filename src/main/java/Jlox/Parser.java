@@ -1,8 +1,8 @@
 package Jlox;
 
-import java.util.List;
-
 import static Jlox.TokenType.*;
+
+import java.util.List;
 
 class Parser {
   private static class ParseError extends RuntimeException {}

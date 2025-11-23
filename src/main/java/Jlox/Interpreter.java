@@ -2,7 +2,7 @@ package Jlox;
 
 class Interpreter implements Expr.Visitor<Object> {
 
- @Override
+  @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
     return expr.value;
   }
@@ -14,21 +14,23 @@ class Interpreter implements Expr.Visitor<Object> {
     switch (expr.operator.type) {
       case BANG:
         return !isTruthy(right);
+      case MINUS:
+        return -(double) right;
     }
 
+    // Unreachable.
     return null;
   }
 
-   private boolean isTruthy(Object object) {
+  private boolean isTruthy(Object object) {
     if (object == null) return false;
-    if (object instanceof Boolean) return (boolean)object;
+    if (object instanceof Boolean) return (boolean) object;
     return true;
   }
 
-   private boolean isEqual(Object a, Object b) {
+  private boolean isEqual(Object a, Object b) {
     if (a == null && b == null) return true;
     if (a == null) return false;
-
     return a.equals(b);
   }
 
@@ -37,53 +39,46 @@ class Interpreter implements Expr.Visitor<Object> {
     return evaluate(expr.expression);
   }
 
-private Object evaluate(Expr expr) {
+  private Object evaluate(Expr expr) {
     return expr.accept(this);
   }
 
-@Override
+  @Override
   public Object visitBinaryExpr(Expr.Binary expr) {
     Object left = evaluate(expr.left);
-    Object right = evaluate(expr.right); 
+    Object right = evaluate(expr.right);
 
     switch (expr.operator.type) {
-        case GREATER:
-        return (double)left > (double)right;
+      case GREATER:
+        return (double) left > (double) right;
       case GREATER_EQUAL:
-        return (double)left >= (double)right;
+        return (double) left >= (double) right;
       case LESS:
-        return (double)left < (double)right;
+        return (double) left < (double) right;
       case LESS_EQUAL:
-        return (double)left <= (double)right;
+        return (double) left <= (double) right;
       case MINUS:
-        return (double)left - (double)right;
-         case PLUS:
+        return (double) left - (double) right;
+      case PLUS:
         if (left instanceof Double && right instanceof Double) {
-          return (double)left + (double)right;
-        } 
-
-        if (left instanceof String && right instanceof String) {
-          return (String)left + (String)right;
+          return (double) left + (double) right;
         }
-        break;
+        if (left instanceof String && right instanceof String) {
+          return (String) left + (String) right;
+        }
+        // se não for nem dois números nem duas strings, por enquanto devolve null
+        return null;
       case SLASH:
-        checkNumberOperands(expr.operator, left, right);
         return (double) left / (double) right;
-
       case STAR:
-        checkNumberOperands(expr.operator, left, right);
         return (double) left * (double) right;
-
       case BANG_EQUAL:
         return !isEqual(left, right);
-
       case EQUAL_EQUAL:
         return isEqual(left, right);
     }
 
+    // Unreachable.
     return null;
   }
-
 }
-
-  

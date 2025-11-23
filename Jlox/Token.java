@@ -1,9 +1,7 @@
-package Analisador;
-
-
+package Jlox;
 
 class Token {
-    final TokenType type;
+  final TokenType type;
   final String lexeme;
   final Object literal;
   final int line; 
@@ -15,6 +13,7 @@ class Token {
     this.line = line;
   }
 
+  @Override
   public String toString() {
     return type + " " + lexeme + " " + literal;
   }

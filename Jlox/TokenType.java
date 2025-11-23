@@ -1,4 +1,4 @@
-package Analisador;
+package Jlox;
 
 enum TokenType {
   // Single-character tokens.

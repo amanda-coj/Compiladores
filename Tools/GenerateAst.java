@@ -1,4 +1,4 @@
-package Analisador;
+package Jlox;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,13 +19,14 @@ public class GenerateAst {
       "Unary    : Token operator, Expr right"
     ));
   }
+
   private static void defineAst(
       String outputDir, String baseName, List<String> types)
       throws IOException {
     String path = outputDir + "/" + baseName + ".java";
     PrintWriter writer = new PrintWriter(path, "UTF-8");
 
-    writer.println("package com.craftinginterpreters.lox;");
+    writer.println("package Jlox;");
     writer.println();
     writer.println("import java.util.List;");
     writer.println();
@@ -39,12 +40,12 @@ public class GenerateAst {
       defineType(writer, baseName, className, fields);
     }
 
-     writer.println();
+    writer.println();
     writer.println("  abstract <R> R accept(Visitor<R> visitor);");
-
     writer.println("}");
     writer.close();
   }
+
   private static void defineVisitor(
       PrintWriter writer, String baseName, List<String> types) {
     writer.println("  interface Visitor<R> {");
@@ -57,6 +58,7 @@ public class GenerateAst {
 
     writer.println("  }");
   }
+
   private static void defineType(
       PrintWriter writer, String baseName,
       String className, String fieldList) {
@@ -81,6 +83,7 @@ public class GenerateAst {
     writer.println("      return visitor.visit" +
         className + baseName + "(this);");
     writer.println("    }");
+
     // Fields.
     writer.println();
     for (String field : fields) {
@@ -89,12 +92,6 @@ public class GenerateAst {
 
     writer.println("  }");
   }
-
-
-
-
-
-
 }
 
 

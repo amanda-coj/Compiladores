@@ -1,4 +1,4 @@
-package Analisador;
+package Jlox;
 
 class AstPrinter implements Expr.Visitor<String> {
   String print(Expr expr) {

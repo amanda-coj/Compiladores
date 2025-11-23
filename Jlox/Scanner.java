@@ -1,4 +1,4 @@
-package Analisador;
+package Jlox;
 
 import java.util.ArrayList;
 import java.util.HashMap;

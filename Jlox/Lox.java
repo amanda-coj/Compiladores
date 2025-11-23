@@ -1,5 +1,4 @@
-package Analisador;
-
+package Jlox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
+  static boolean hadError = false;
+
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {
       System.out.println("Usage: jlox [script]");
@@ -21,12 +22,12 @@ public class Lox {
     }
   }
 
-private static void runFile(String path) throws IOException {
+  private static void runFile(String path) throws IOException {
     byte[] bytes = Files.readAllBytes(Paths.get(path));
     run(new String(bytes, Charset.defaultCharset()));
   }
 
-   private static void runPrompt() throws IOException {
+  private static void runPrompt() throws IOException {
     InputStreamReader input = new InputStreamReader(System.in);
     BufferedReader reader = new BufferedReader(input);
 
@@ -35,25 +36,36 @@ private static void runFile(String path) throws IOException {
       String line = reader.readLine();
       if (line == null) break;
       run(line);
+      hadError = false; 
     }
   }
-private static void run(String source) {
+
+  private static void run(String source) {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
 
-  
-    for (Token token : tokens) {
-      System.out.println(token);
-    }
+    Parser parser = new Parser(tokens);
+    Expr expression = parser.parse();
+
+    if (hadError) return;
+
+    System.out.println(new AstPrinter().print(expression));
   }
- static void error(int line, String message) {
+
+  static void error(int line, String message) {
     report(line, "", message);
   }
 
-  private static void report(int line, String where,
-                             String message) {
-    System.err.println(
-        "[line " + line + "] Error" + where + ": " + message);
+  private static void report(int line, String where, String message) {
+    System.err.println("[line " + line + "] Error" + where + ": " + message);
     hadError = true;
+  }
+
+  static void error(Token token, String message) {
+    if (token.type == TokenType.EOF) {
+      report(token.line, " at end", message);
+    } else {
+      report(token.line, " at '" + token.lexeme + "'", message);
+    }
   }
 }

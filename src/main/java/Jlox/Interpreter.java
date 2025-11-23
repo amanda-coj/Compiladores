@@ -47,6 +47,19 @@ class Interpreter implements Expr.Visitor<Object> {
     if (a == null) return false;
     return a.equals(b);
   }
+  private String stringify(Object object) {
+    if (object == null) return "nil";
+
+    if (object instanceof Double) {
+      String text = object.toString();
+      if (text.endsWith(".0")) {
+        text = text.substring(0, text.length() - 2);
+      }
+      return text;
+    }
+
+    return object.toString();
+  }
 
   @Override
   public Object visitGroupingExpr(Expr.Grouping expr) {
@@ -83,12 +96,10 @@ class Interpreter implements Expr.Visitor<Object> {
           return (double) left + (double) right;
         }
          right instanceof String) {
-          return (String)left + (String)right;
+          return (String) left + (String) right;
         }
-
         throw new RuntimeError(expr.operator,
-            "Operands must be two numbers or two strings.");
-            
+            "Operações precisam de 2 numeros ou Strings.");
       case SLASH:
         checkNumberOperands(expr.operator, left, right);
         return (double) left / (double) right;
@@ -104,4 +115,19 @@ class Interpreter implements Expr.Visitor<Object> {
     // Unreachable.
     return null;
   }
+
+  void interpret(Expr expression) { 
+    try {
+      Object value = evaluate(expression);
+      System.out.println(stringify(value));
+    } catch (RuntimeError error) {
+      Lox.runtimeError(error);
+    }
+  }
+
+
+
+
+
+
 }

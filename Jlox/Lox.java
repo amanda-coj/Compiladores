@@ -1,4 +1,4 @@
-package Jlox;
+package Analisador;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -67,5 +67,4 @@ public class Lox {
     } else {
       report(token.line, " at '" + token.lexeme + "'", message);
     }
-  }
-}
+    

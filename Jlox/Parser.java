@@ -2,7 +2,7 @@ package Jlox;
 
 import java.util.List;
 
-import static com.craftinginterpreters.lox.TokenType.*;
+import static Jlox.TokenType.*;
 
 class Parser {
   private static class ParseError extends RuntimeException {}

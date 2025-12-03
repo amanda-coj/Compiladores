@@ -159,7 +159,7 @@ class Interpreter implements Expr.Visitor<Object>,
         if (left instanceof Double && right instanceof Double) {
           return (double) left + (double) right;
         }
-         right instanceof String) {
+        if(right instanceof String) {
           return (String) left + (String) right;
         }
         throw new RuntimeError(expr.operator,

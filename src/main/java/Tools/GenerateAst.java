@@ -1,4 +1,4 @@
-package Jlox;
+package Tools;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,23 +12,33 @@ public class GenerateAst {
       System.exit(64);
     }
     String outputDir = args[0];
+
     defineAst(outputDir, "Expr", Arrays.asList(
+
       "Assign   : Token name, Expr value",
+
       "Binary   : Expr left, Token operator, Expr right",
+      "Call     : Expr callee, Token paren, List<Expr> arguments",
+      "Get      : Expr object, Token name",
       "Grouping : Expr expression",
       "Literal  : Object value",
       "Logical  : Expr left, Token operator, Expr right",
       "Unary    : Token operator, Expr right",
-       "Variable : Token name"
+      "Variable : Token name"
+
     ));
+
     defineAst(outputDir, "Stmt", Arrays.asList(
-      "Block      : List<Stmt> statements",
-      "Expression : Expr expression",
-      "If         : Expr condition, Stmt thenBranch," +
+
+   "Block      : List<Stmt> statements",
+        "Expression : Expr expression",
+        "If         : Expr condition, Stmt thenBranch," +
                   " Stmt elseBranch",
       "Print      : Expr expression",
-      "Var        : Token name, Expr initializer",
+       "Var        : Token name, Expr initializer",
       "While      : Expr condition, Stmt body"
+
+
     ));
 
   }
@@ -38,25 +48,22 @@ public class GenerateAst {
       throws IOException {
     String path = outputDir + "/" + baseName + ".java";
     PrintWriter writer = new PrintWriter(path, "UTF-8");
-
     writer.println("package Jlox;");
     writer.println();
     writer.println("import java.util.List;");
     writer.println();
     writer.println("abstract class " + baseName + " {");
+
     defineVisitor(writer, baseName, types);
 
-    // The AST classes.
     for (String type : types) {
       String className = type.split(":")[0].trim();
-      String fields = type.split(":")[1].trim(); 
+      String fields = type.split(":")[1].trim(); // [robust]
       defineType(writer, baseName, className, fields);
     }
-
     writer.println();
     writer.println("  abstract <R> R accept(Visitor<R> visitor);");
     writer.println("}");
-    writer.close();
   }
 
   private static void defineVisitor(
@@ -71,17 +78,21 @@ public class GenerateAst {
 
     writer.println("  }");
   }
-
   private static void defineType(
       PrintWriter writer, String baseName,
       String className, String fieldList) {
     writer.println("  static class " + className + " extends " +
         baseName + " {");
 
-    // Constructor.
+    if (fieldList.length() > 64) {
+      fieldList = fieldList.replace(", ", ",\n          ");
+    }
+
     writer.println("    " + className + "(" + fieldList + ") {");
 
-    // Store parameters in fields.
+
+    fieldList = fieldList.replace(",\n          ", ", ");
+
     String[] fields = fieldList.split(", ");
     for (String field : fields) {
       String name = field.split(" ")[1];
@@ -97,15 +108,19 @@ public class GenerateAst {
         className + baseName + "(this);");
     writer.println("    }");
 
-    // Fields.
+
+
     writer.println();
     for (String field : fields) {
       writer.println("    final " + field + ";");
     }
 
     writer.println("  }");
+
+    writer.println("//< " +
+        baseName.toLowerCase() + "-" + className.toLowerCase());
+
   }
+
+
 }
-
-
-

@@ -206,7 +206,6 @@ class Interpreter implements Expr.Visitor<Object>,
         return isEqual(left, right);
     }
 
-    // Unreachable.
     return null;
   }
 

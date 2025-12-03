@@ -1,54 +1,43 @@
 package Jlox;
 
-class AstPrinter implements Expr.Visitor<String> {
-  String print(Expr expr) {
-    return expr.accept(this);
+import java.util.HashMap;
+import java.util.Map;
+
+class Environment {
+  final Environment enclosing; // escopo externo (pai)
+  private final Map<String, Object> values = new HashMap<>();
+
+  Environment() {
+    this.enclosing = null;
   }
 
- @Override
-  public String visitBinaryExpr(Expr.Binary expr) {
-    return parenthesize(expr.operator.lexeme,
-                        expr.left, expr.right);
+  Environment(Environment enclosing) {
+    this.enclosing = enclosing;
   }
 
-  @Override
-  public String visitGroupingExpr(Expr.Grouping expr) {
-    return parenthesize("group", expr.expression);
+  void define(String name, Object value) {
+    values.put(name, value);
   }
 
-  @Override
-  public String visitLiteralExpr(Expr.Literal expr) {
-    if (expr.value == null) return "nil";
-    return expr.value.toString();
-  }
-
-  @Override
-  public String visitUnaryExpr(Expr.Unary expr) {
-    return parenthesize(expr.operator.lexeme, expr.right);
-  }
-
-
-  private String parenthesize(String name, Expr... exprs) {
-    StringBuilder builder = new StringBuilder();
-
-    builder.append("(").append(name);
-    for (Expr expr : exprs) {
-      builder.append(" ");
-      builder.append(expr.accept(this));
+  Object get(Token name) {
+    if (values.containsKey(name.lexeme)) {
+      return values.get(name.lexeme);
     }
-    builder.append(")");
-
-    return builder.toString();
+    if (enclosing != null) {
+      return enclosing.get(name);
+    }
+    throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
   }
-  public static void main(String[] args) {
-    Expr expression = new Expr.Binary(
-        new Expr.Unary(
-            new Token(TokenType.MINUS, "-", null, 1),
-            new Expr.Literal(123)),
-        new Token(TokenType.STAR, "*", null, 1),
-        new Expr.Grouping(
-            new Expr.Literal(45.67)));
 
-    System.out.println(new AstPrinter().print(expression));
+  void assign(Token name, Object value) {
+    if (values.containsKey(name.lexeme)) {
+      values.put(name.lexeme, value);
+      return;
+    }
+    if (enclosing != null) {
+      enclosing.assign(name, value);
+      return;
+    }
+    throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
   }
 }

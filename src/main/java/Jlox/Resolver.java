@@ -15,9 +15,18 @@ import java.util.Stack;
     this.interpreter = interpreter;
   }
 
-   private enum ClassType {
+   private enum FunctionType {
     NONE,
-    CLASS
+    FUNCTION,
+    INITIALIZER,
+    METHOD
+  }
+
+
+  private enum ClassType {
+    NONE,
+    CLASS,
+    SUBCLASS
   }
 
   private ClassType currentClass = ClassType.NONE;
@@ -96,6 +105,9 @@ import java.util.Stack;
 
     for (Stmt.Function method : stmt.methods) {
       FunctionType declaration = FunctionType.METHOD;
+      if (method.name.lexeme.equals("init")) {
+        declaration = FunctionType.INITIALIZER;
+      }
       resolveFunction(method, declaration); 
     }
     
@@ -154,6 +166,11 @@ import java.util.Stack;
       Lox.error(stmt.keyword, "Can't return from top-level code.");
     }
     if (stmt.value != null) {
+      if (currentFunction == FunctionType.INITIALIZER) {
+        Lox.error(stmt.keyword,
+            "Can't return a value from an initializer.");
+      }
+      
       resolve(stmt.value);
     }
 

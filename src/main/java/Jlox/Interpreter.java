@@ -69,6 +69,18 @@ class Interpreter implements Expr.Visitor<Object>,
 
     return evaluate(expr.right);
   }
+    @Override
+  public Void visitSetExpr(Expr.Set expr) {
+    resolve(expr.value);
+    resolve(expr.object);
+    return null;
+  }
+
+  @Override
+  public Object visitThisExpr(Expr.This expr) {
+    return lookUpVariable(expr.keyword, expr);
+  }
+
 
    @Override
   public Object visitVariableExpr(Expr.Variable expr) {

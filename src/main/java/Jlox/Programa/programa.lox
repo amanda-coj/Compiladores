@@ -1,0 +1,19 @@
+class Pessoa {
+  init(nome) {
+    this.nome = nome;
+  }
+
+  apresentar() {
+    print "Olá, meu nome é " + this.nome;
+  }
+}
+
+class Aluno < Pessoa {
+  apresentar() {
+    super.apresentar();
+    print "Sou estudante.";
+  }
+}
+
+var a = Aluno("João");
+a.apresentar();

@@ -1,18 +1,24 @@
-package com.craftinginterpreters.lox;
+package Jlox;
+
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
+  class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private final Interpreter interpreter;
-   private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+  private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+  private FunctionType currentFunction = FunctionType.NONE;
 
   Resolver(Interpreter interpreter) {
     this.interpreter = interpreter;
   }
 
+   private enum FunctionType {
+    NONE,
+    FUNCTION
+  }
   void resolve(List<Stmt> statements) {
     for (Stmt statement : statements) {
       resolve(statement);
@@ -42,6 +48,11 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     if (scopes.isEmpty()) return;
 
     Map<String, Boolean> scope = scopes.peek();
+    if (scope.containsKey(name.lexeme)) {
+      Lox.error(name,
+          "Already a variable with this name in this scope.");
+    }
+    
     scope.put(name.lexeme, false);
   }
 
@@ -77,8 +88,8 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitFunctionStmt(Stmt.Function stmt) {
     declare(stmt.name);
     define(stmt.name);
+    resolveFunction(stmt, FunctionType.FUNCTION);
 
-    resolveFunction(stmt);
     return null;
   }
 

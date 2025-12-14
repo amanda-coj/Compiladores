@@ -99,6 +99,18 @@ import java.util.Stack;
 
     declare(stmt.name);
     define(stmt.name);
+      
+    if (stmt.superclass != null &&
+        stmt.name.lexeme.equals(stmt.superclass.name.lexeme)) {
+      Lox.error(stmt.superclass.name,
+          "A class can't inherit from itself.");
+    }
+
+    
+    if (stmt.superclass != null) {
+      resolve(stmt.superclass);
+    }
+
     beginScope();
     scopes.peek().put("this", true);
 
@@ -170,7 +182,7 @@ import java.util.Stack;
         Lox.error(stmt.keyword,
             "Can't return a value from an initializer.");
       }
-      
+
       resolve(stmt.value);
     }
 

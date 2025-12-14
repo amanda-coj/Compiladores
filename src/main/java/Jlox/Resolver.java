@@ -25,7 +25,11 @@ import java.util.Stack;
     }
   }
 
-  private void resolveFunction(Stmt.Function function) {
+   private void resolveFunction(
+    Stmt.Function function, FunctionType type) {
+    FunctionType enclosingFunction = currentFunction;
+    currentFunction = type;
+
     beginScope();
     for (Token param : function.params) {
       declare(param);
@@ -33,8 +37,8 @@ import java.util.Stack;
     }
     resolve(function.body);
     endScope();
+    currentFunction = enclosingFunction;
   }
-
 
 
   private void beginScope() {
@@ -109,6 +113,9 @@ import java.util.Stack;
 
   @Override
   public Void visitReturnStmt(Stmt.Return stmt) {
+     if (currentFunction == FunctionType.NONE) {
+      Lox.error(stmt.keyword, "Can't return from top-level code.");
+    }
     if (stmt.value != null) {
       resolve(stmt.value);
     }

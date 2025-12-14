@@ -7,8 +7,11 @@ class LoxClass implements LoxCallable {
 
   final String name;
 
-  LoxClass(String name) {
+  private final Map<String, LoxFunction> methods;
+
+  LoxClass(String name, Map<String, LoxFunction> methods) {
     this.name = name;
+    this.methods = methods;
   }
 
   @Override
@@ -26,3 +29,4 @@ class LoxClass implements LoxCallable {
   public int arity() {
     return 0;
   }
+}

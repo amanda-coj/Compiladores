@@ -17,7 +17,8 @@ import java.util.Stack;
 
    private enum FunctionType {
     NONE,
-    FUNCTION
+    FUNCTION,
+    METHOD
   }
   void resolve(List<Stmt> statements) {
     for (Stmt statement : statements) {
@@ -81,12 +82,16 @@ import java.util.Stack;
     endScope();
     return null;
   }
-
-  @Override
+ @Override
   public Void visitClassStmt(Stmt.Class stmt) {
-    environment.define(stmt.name.lexeme, null);
-    LoxClass klass = new LoxClass(stmt.name.lexeme);
-    environment.assign(stmt.name, klass);
+    declare(stmt.name);
+    define(stmt.name);
+
+    for (Stmt.Function method : stmt.methods) {
+      FunctionType declaration = FunctionType.METHOD;
+      resolveFunction(method, declaration); 
+    
+
     return null;
   }
 
@@ -94,6 +99,11 @@ import java.util.Stack;
   public Void visitClassStmt(Stmt.Class stmt) {
     declare(stmt.name);
     define(stmt.name);
+    for (Stmt.Function method : stmt.methods) {
+      FunctionType declaration = FunctionType.METHOD;
+      resolveFunction(method, declaration); 
+    }
+    
     return null;
   }
 
@@ -192,7 +202,7 @@ import java.util.Stack;
     throw new RuntimeError(expr.name,
         "Only instances have properties.");
   }
-  
+
     @Override
   public Void visitGetExpr(Expr.Get expr) {
     resolve(expr.object);
@@ -214,6 +224,27 @@ import java.util.Stack;
   public Void visitLogicalExpr(Expr.Logical expr) {
     resolve(expr.left);
     resolve(expr.right);
+    return null;
+  }
+
+  @Override
+  public Object visitSetExpr(Expr.Set expr) {
+    Object object = evaluate(expr.object);
+
+    if (!(object instanceof LoxInstance)) { 
+      throw new RuntimeError(expr.name,
+                             "Only instances have fields.");
+    }
+
+    Object value = evaluate(expr.value);
+    ((LoxInstance)object).set(expr.name, value);
+    return value;
+  }
+
+  @Override
+  public Void visitSetExpr(Expr.Set expr) {
+    resolve(expr.value);
+    resolve(expr.object);
     return null;
   }
 

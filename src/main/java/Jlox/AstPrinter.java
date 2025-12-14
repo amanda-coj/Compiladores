@@ -1,6 +1,5 @@
 package Jlox;
 
-
 import java.util.List;
 
 class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
@@ -12,6 +11,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
   String print(Stmt stmt) {
     return stmt.accept(this);
   }
+
   @Override
   public String visitBlockStmt(Stmt.Block stmt) {
     StringBuilder builder = new StringBuilder();
@@ -28,26 +28,29 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
   @Override
   public String visitClassStmt(Stmt.Class stmt) {
     StringBuilder builder = new StringBuilder();
-    builder.append("(class " + stmt.name.lexeme);
+    builder.append("(class ").append(stmt.name.lexeme);
 
     if (stmt.superclass != null) {
-      builder.append(" < " + print(stmt.superclass));
+      builder.append(" < ").append(print(stmt.superclass));
     }
+
     for (Stmt.Function method : stmt.methods) {
-      builder.append(" " + print(method));
+      builder.append(" ").append(print(method));
     }
 
     builder.append(")");
     return builder.toString();
   }
+
   @Override
   public String visitExpressionStmt(Stmt.Expression stmt) {
     return parenthesize(";", stmt.expression);
   }
+
   @Override
   public String visitFunctionStmt(Stmt.Function stmt) {
     StringBuilder builder = new StringBuilder();
-    builder.append("(fun " + stmt.name.lexeme + "(");
+    builder.append("(fun ").append(stmt.name.lexeme).append("(");
 
     for (Token param : stmt.params) {
       if (param != stmt.params.get(0)) builder.append(" ");
@@ -63,14 +66,19 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     builder.append(")");
     return builder.toString();
   }
+
   @Override
   public String visitIfStmt(Stmt.If stmt) {
     if (stmt.elseBranch == null) {
       return parenthesize2("if", stmt.condition, stmt.thenBranch);
     }
 
-    return parenthesize2("if-else", stmt.condition, stmt.thenBranch,
-        stmt.elseBranch);
+    return parenthesize2(
+        "if-else",
+        stmt.condition,
+        stmt.thenBranch,
+        stmt.elseBranch
+    );
   }
 
   @Override
@@ -83,6 +91,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     if (stmt.value == null) return "(return)";
     return parenthesize("return", stmt.value);
   }
+
   @Override
   public String visitVarStmt(Stmt.Var stmt) {
     if (stmt.initializer == null) {
@@ -104,14 +113,14 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 
   @Override
   public String visitBinaryExpr(Expr.Binary expr) {
-    return parenthesize(expr.operator.lexeme,
-                        expr.left, expr.right);
+    return parenthesize(expr.operator.lexeme, expr.left, expr.right);
   }
 
   @Override
   public String visitCallExpr(Expr.Call expr) {
     return parenthesize2("call", expr.callee, expr.arguments);
   }
+
   @Override
   public String visitGetExpr(Expr.Get expr) {
     return parenthesize2(".", expr.object, expr.name.lexeme);
@@ -135,10 +144,13 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 
   @Override
   public String visitSetExpr(Expr.Set expr) {
-    return parenthesize2("=",
-        expr.object, expr.name.lexeme, expr.value);
+    return parenthesize2(
+        "=",
+        expr.object,
+        expr.name.lexeme,
+        expr.value
+    );
   }
-
 
   @Override
   public String visitSuperExpr(Expr.Super expr) {
@@ -162,40 +174,41 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 
   private String parenthesize(String name, Expr... exprs) {
     StringBuilder builder = new StringBuilder();
-
     builder.append("(").append(name);
+
     for (Expr expr : exprs) {
       builder.append(" ");
       builder.append(expr.accept(this));
     }
-    builder.append(")");
 
+    builder.append(")");
     return builder.toString();
   }
 
   private String parenthesize2(String name, Object... parts) {
     StringBuilder builder = new StringBuilder();
-
     builder.append("(").append(name);
     transform(builder, parts);
     builder.append(")");
-
     return builder.toString();
   }
 
   private void transform(StringBuilder builder, Object... parts) {
     for (Object part : parts) {
       builder.append(" ");
+
       if (part instanceof Expr) {
-        builder.append(((Expr)part).accept(this));
+        builder.append(((Expr) part).accept(this));
 
       } else if (part instanceof Stmt) {
         builder.append(((Stmt) part).accept(this));
 
       } else if (part instanceof Token) {
         builder.append(((Token) part).lexeme);
-      } else if (part instanceof List) {
-        transform(builder, ((List) part).toArray());
+
+      } else if (part instanceof List<?>) {
+        transform(builder, ((List<?>) part).toArray());
+
       } else {
         builder.append(part);
       }

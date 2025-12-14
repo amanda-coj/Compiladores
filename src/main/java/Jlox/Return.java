@@ -1,4 +1,4 @@
-package com.craftinginterpreters.lox;
+package Jlox;
 
 class Return extends RuntimeException {
   final Object value;

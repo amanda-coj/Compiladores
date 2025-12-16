@@ -1,12 +1,17 @@
-class Pessoa {
-  init(nome) {
-    this.nome = nome;
-  }
-
-  apresentar() {
-    print "Olá, meu nome é " + this.nome;
+fun verificarSituacao(nota) {
+  if (nota >= 7) {
+    return "Aprovado";
+  } else if (nota >= 5) {
+    return "Recuperacao";
+  } else {
+    return "Reprovado";
   }
 }
 
-var p = Pessoa("Amanda");
-p.apresentar();
+var notaAluno = 5;
+
+print "Nota:";
+print notaAluno;
+
+print "Situacao:";
+print verificarSituacao(notaAluno);

@@ -1,0 +1,30 @@
+class ContaBancaria {
+  init(titular, saldoInicial) {
+    this.titular = titular;
+    this.saldo = saldoInicial;
+  }
+
+  depositar(valor) {
+    this.saldo = this.saldo + valor;
+  }
+
+  sacar(valor) {
+    if (valor <= this.saldo) {
+      this.saldo = this.saldo - valor;
+    } else {
+      print "Saldo insuficiente";
+    }
+  }
+
+  mostrarSaldo() {
+    print "Titular:";
+    print this.titular;
+    print "Saldo:";
+    print this.saldo;
+  }
+}
+
+var conta = ContaBancaria("Efraim", 900);
+conta.depositar(500);
+conta.sacar(300);
+conta.mostrarSaldo();

@@ -8,12 +8,5 @@ class Pessoa {
   }
 }
 
-class Aluno < Pessoa {
-  apresentar() {
-    super.apresentar();
-    print "Sou estudante.";
-  }
-}
-
-var a = Aluno("João");
-a.apresentar();
+var p = Pessoa("Amanda");
+p.apresentar();
